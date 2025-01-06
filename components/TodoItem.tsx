@@ -6,7 +6,6 @@ import { StyleSheet, Text, View,ImageBackground,  TouchableOpacity } from "react
 export default function TodoItem({ todo, toggleComplete, deleteTodo }: TodoItemProps) {
     const renderRightActions = () => (
       <View style={styles.deleteButton}>
-        <View style={styles.spacer} />
         <TouchableOpacity onPress={() => deleteTodo(todo.id)}>
           <Text style={styles.deleteText}>Delete</Text>
         </TouchableOpacity>
@@ -23,7 +22,6 @@ export default function TodoItem({ todo, toggleComplete, deleteTodo }: TodoItemP
               </Text>
             </TouchableOpacity>
           </View>
-          
         </View>
       </Swipeable>
     );
@@ -70,7 +68,4 @@ export default function TodoItem({ todo, toggleComplete, deleteTodo }: TodoItemP
       color: "white",
       fontWeight: "bold",
     },
-    spacer: {
-        width: 10, 
-      },
   });

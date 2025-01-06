@@ -14,7 +14,10 @@
     "expo-status-bar": "~2.0.0",
     "react": "18.3.1",
     "react-native": "0.76.5",
-    "react-native-gesture-handler": "^2.21.2"
+    "react-native-animated-pagination-dots": "^0.1.73",
+    "react-native-gesture-handler": "^2.21.2",
+    "react-native-pager-view": "6.5.1",
+    "react-native-tab-view": "^4.0.5"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

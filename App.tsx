@@ -3,13 +3,16 @@ import { Image, StyleSheet, Platform } from 'react-native';
 import React, { useState, useEffect } from "react";
 import { View, FlatList, TextInput, TouchableOpacity, Button, Text } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler"; // Import GestureHandlerRootView
+import { TabBar } from 'react-native-tab-view';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import TodoItem from './components/TodoItem';
 import { Todo } from './model/Todo';
+import { TabView, SceneMap } from 'react-native-tab-view';
 
 export default function App() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [text, setText] = useState("");
+  const [index, setIndex] = useState(0); // Tab index
 
   // Load todos from AsyncStorage
   useEffect(() => {
@@ -49,6 +52,48 @@ export default function App() {
 
   const completedTodos = todos.filter((todo) => todo.completed);
   const uncompletedTodos = todos.filter((todo) => !todo.completed);
+  const [routes] = useState([
+    { key: 'uncompleted', title: 'Uncompleted' },
+    { key: 'completed', title: 'Completed' }
+  ]);
+
+
+  const renderScene = SceneMap({
+    uncompleted: () => (
+      <View key="1">
+        <Text style={styles.sectionTitle}>Uncompleted Tasks</Text>
+      <FlatList
+        data={uncompletedTodos}
+        renderItem={({ item }) => (
+          <TodoItem
+            todo={item}
+            toggleComplete={toggleComplete}
+            deleteTodo={deleteTodo}
+          />
+        )}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={styles.list}
+      />
+      </View>
+    ),
+    completed: () => (
+      <View key="2">
+      <Text style={styles.sectionTitle}>Completed Tasks</Text>
+      <FlatList
+        data={completedTodos}
+        renderItem={({ item }) => (
+          <TodoItem
+            todo={item}
+            toggleComplete={toggleComplete}
+            deleteTodo={deleteTodo}
+          />
+        )}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={styles.list}
+      />
+      </View>
+    ),
+  });
 
 
   return (
@@ -67,37 +112,24 @@ export default function App() {
       </View>
 
 
-      {uncompletedTodos.length > 0 && <Text style={styles.sectionTitle}>Uncompleted Tasks</Text>}
+      
       <GestureHandlerRootView style={{ flex: 1 }}> {}
-      <FlatList
-        data={uncompletedTodos}
-        renderItem={({ item }) => (
-          <TodoItem
-            todo={item}
-            toggleComplete={toggleComplete}
-            deleteTodo={deleteTodo}
-          />
-        )}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.list}
-      />
-    </GestureHandlerRootView>
-
-    {completedTodos.length > 0 && <Text style={styles.sectionTitle}>Completed Tasks</Text>}
-    <GestureHandlerRootView style={{ flex: 1 }}> {}
-      <FlatList
-        data={completedTodos}
-        renderItem={({ item }) => (
-          <TodoItem
-            todo={item}
-            toggleComplete={toggleComplete}
-            deleteTodo={deleteTodo}
-          />
-        )}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.list}
-      />
-    </GestureHandlerRootView>
+      <TabView 
+          navigationState={{ index, routes }}
+          renderScene={renderScene}
+          onIndexChange={setIndex}
+          initialLayout={{ width: 100 }} 
+          renderTabBar={(props) => (
+            <TabBar
+              {...props}
+              style={styles.tabBar} 
+              indicatorStyle={styles.indicator} 
+              activeColor="#1abc9c" 
+              inactiveColor="#7f8c8d" 
+            />
+          )}
+        />
+      </GestureHandlerRootView>
     </View>
   );
 }
@@ -107,7 +139,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#f7f8fa",
     paddingTop: 40,
-    paddingHorizontal: 20,
+    paddingHorizontal: 15,
   },
   header: {
     fontSize: 32,
@@ -165,4 +197,15 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     marginLeft: 15,
   },
+  tabBar: {
+    backgroundColor: "#f7f8fa",
+    elevation: 2, // Shadow for elevation effect
+    borderBottomWidth: 1,
+    borderBottomColor: "#bdc3c7", // Border for the bottom of the TabBar
+  },
+
+  indicator: {
+    backgroundColor: "#1abc9c", // Color of the active tab indicator
+    height: 3, // Height of the indicator line
+  }
 });
